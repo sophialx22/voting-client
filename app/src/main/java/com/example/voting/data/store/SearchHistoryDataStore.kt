@@ -16,13 +16,6 @@ class SearchHistoryDataStore(private val context: Context) {
         private val HISTORY_KEY = stringPreferencesKey("search_history")
         private const val MAX_HISTORY_SIZE = 10
     }
-    fun getSearchHistoryFlow(): Flow<List<String>> {
-        return context.dataStore.data.map { preferences ->
-            val historyString = preferences[HISTORY_KEY] ?: ""
-            if (historyString.isBlank()) emptyList()
-            else historyString.split("||").filter { it.isNotBlank() }
-        }
-    }
 
     suspend fun getSearchHistory(): List<String> {
         val preferences = context.dataStore.data.first()

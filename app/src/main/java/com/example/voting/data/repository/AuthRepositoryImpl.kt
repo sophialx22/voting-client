@@ -23,49 +23,6 @@ class AuthRepositoryImpl(
         private val USER_EMAIL_KEY = stringPreferencesKey("user_email")
     }
 
-    override suspend fun register(email: String, password: String): Result<Boolean> {
-        return try {
-            val response = apiService.register(RegisterRequest(email, password))
-            if (response.success && response.token != null) {
-                saveToken(response.token)
-                saveUserEmail(email)
-                Result.success(true)
-            } else {
-                Result.failure(Exception(response.message ?: "Ошибка регистрации"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun login(email: String, password: String): Result<Boolean> {
-        return try {
-            val response = apiService.login(LoginRequest(email, password))
-            if (response.success && response.token != null) {
-                saveToken(response.token)
-                saveUserEmail(email)
-                Result.success(true)
-            } else {
-                Result.failure(Exception(response.message ?: "Неверный email или пароль"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun logout(): Result<Boolean> {
-        return try {
-            val token = getToken()
-            if (token != null) {
-                apiService.logout(token)
-            }
-            clearUserData()
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
     override suspend fun isAuthenticated(): Boolean {
         return getToken() != null && getCurrentUserEmail() != null
     }

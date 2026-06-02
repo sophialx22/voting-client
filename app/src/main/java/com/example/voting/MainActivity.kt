@@ -51,10 +51,6 @@ class MainActivity : ComponentActivity() {
     private val voteRepository: VoteRepository by lazy {
         VoteRepositoryImpl(apiService, authRepository)
     }
-
-    private val registerUseCase by lazy { RegisterUseCase(authRepository) }
-    private val loginUseCase by lazy { LoginUseCase(authRepository) }
-    private val logoutUseCase by lazy { LogoutUseCase(authRepository) }
     private val getAllPollsUseCase by lazy { GetAllPollsUseCase(pollRepository) }
     private val getMyPollsUseCase by lazy { GetMyPollsUseCase(pollRepository, authRepository) }
     private val createPollUseCase by lazy { CreatePollUseCase(pollRepository) }

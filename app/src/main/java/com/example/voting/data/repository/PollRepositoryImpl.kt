@@ -11,7 +11,6 @@ class PollRepositoryImpl(
     private val apiService: ApiService,
     private val authRepository: AuthRepository
 ) : PollRepository {
-
     private suspend fun mapToDomain(dataPoll: DataPoll): Poll {
         return Poll(
             id = dataPoll.id,

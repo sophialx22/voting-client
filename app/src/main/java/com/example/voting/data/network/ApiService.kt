@@ -16,27 +16,7 @@ class ApiService(
     private val client: HttpClient,
     private val baseUrl: String
 ) {
-    suspend fun register(request: RegisterRequest): AuthResponse {
-        return client.post {
-            url("$baseUrl/auth/register")
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }.body()
-    }
-    suspend fun login(request: LoginRequest): AuthResponse {
-        return client.post {
-            url("$baseUrl/auth/login")
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }.body()
-    }
-    suspend fun logout(token: String): Boolean {
-        return client.post {
-            url("$baseUrl/auth/logout")
-            contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer $token")
-        }.body()
-    }
+
     suspend fun firebaseSignIn(idToken: String): AuthResponse {
         return client.post {
             url("$baseUrl/auth/firebase")
