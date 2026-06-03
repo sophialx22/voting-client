@@ -10,9 +10,6 @@ class CastVoteUseCase(
         if (pollId <= 0) {
             return Result.failure(IllegalArgumentException("Неверный ID голосования"))
         }
-        if (optionId <= 0) {
-            return Result.failure(IllegalArgumentException("Неверный ID варианта ответа"))
-        }
 
         val userEmail = authRepository.getCurrentUserEmail()
         if (userEmail.isNullOrBlank()) {

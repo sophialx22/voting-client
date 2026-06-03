@@ -30,7 +30,6 @@ class PollListViewModel(
     private val updatePollUseCase: UpdatePollUseCase,
     private val castVoteUseCase: CastVoteUseCase,
     private val getResultsUseCase: GetResultsUseCase,
-    private val checkUserVotedUseCase: CheckUserVotedUseCase,
     private val searchHistoryDataStore: SearchHistoryDataStore,
     private val authRepository: AuthRepository
 ) : ViewModel() {
@@ -47,7 +46,7 @@ class PollListViewModel(
     private fun loadCurrentUserEmail() {
         viewModelScope.launch {
             val email = authRepository.getCurrentUserEmail()
-            println("📧 Email загружен: $email")
+            println("Email загружен: $email")
             _uiState.value = _uiState.value.copy(currentUserEmail = email)
         }
     }
@@ -93,7 +92,7 @@ class PollListViewModel(
         viewModelScope.launch {
             val history = searchHistoryDataStore.getSearchHistory()
             _uiState.value = _uiState.value.copy(searchHistory = history)
-            println("📜 История загружена: $history")
+            println("История загружена: $history")
         }
     }
 
@@ -103,7 +102,7 @@ class PollListViewModel(
             searchHistoryDataStore.addToHistory(query)
             val newHistory = searchHistoryDataStore.getSearchHistory()
             _uiState.value = _uiState.value.copy(searchHistory = newHistory)
-            println("➕ Добавлен в историю: $query, история: $newHistory")
+            println("Добавлен в историю: $query, история: $newHistory")
         }
     }
 
@@ -111,7 +110,7 @@ class PollListViewModel(
         viewModelScope.launch {
             searchHistoryDataStore.clearHistory()
             _uiState.value = _uiState.value.copy(searchHistory = emptyList())
-            println("🗑 История очищена")
+            println("История очищена")
         }
     }
 
@@ -149,15 +148,6 @@ class PollListViewModel(
             val result = deletePollUseCase(pollId)
             result.onSuccess {
                 loadPolls()
-            }
-        }
-    }
-
-    fun checkUserVoted(pollId: Int, onResult: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val result = checkUserVotedUseCase(pollId)
-            result.onSuccess { hasVoted ->
-                onResult(hasVoted)
             }
         }
     }

@@ -5,9 +5,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.voting.data.model.LoginRequest
-import com.example.voting.data.model.RegisterRequest
-import com.example.voting.data.network.ApiService
 import com.example.voting.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.first
 
@@ -15,7 +12,6 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class AuthRepositoryImpl(
     private val context: Context,
-    private val apiService: ApiService
 ) : AuthRepository {
 
     companion object {

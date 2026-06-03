@@ -1,10 +1,5 @@
 package com.example.voting.domain.model
 
-data class Vote(
-    val pollId: Int,
-    val optionId: Int
-)
-
 data class PollResult(
     val pollId: Int,
     val title: String,

@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
     private val apiService by lazy { NetworkClient.getApiService() }
 
     private val authRepository: AuthRepository by lazy {
-        AuthRepositoryImpl(applicationContext, apiService)
+        AuthRepositoryImpl(applicationContext)
     }
 
     private val pollRepository: PollRepository by lazy {
@@ -58,7 +58,6 @@ class MainActivity : ComponentActivity() {
     private val updatePollUseCase by lazy { UpdatePollUseCase(pollRepository) }
     private val castVoteUseCase by lazy { CastVoteUseCase(voteRepository, authRepository) }
     private val getResultsUseCase by lazy { GetResultsUseCase(voteRepository) }
-    private val checkUserVotedUseCase by lazy { CheckUserVotedUseCase(voteRepository, authRepository) }
 
     private lateinit var authViewModel: AuthViewModel
     private lateinit var pollListViewModel: PollListViewModel
@@ -88,7 +87,6 @@ class MainActivity : ComponentActivity() {
             updatePollUseCase,
             castVoteUseCase,
             getResultsUseCase,
-            checkUserVotedUseCase,
             searchHistoryDataStore,
             authRepository
         )
