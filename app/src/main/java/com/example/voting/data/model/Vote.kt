@@ -1,5 +1,4 @@
 package com.example.voting.data.model
-
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -15,15 +14,15 @@ data class VoteResponse(
 )
 
 @Serializable
-data class PollResult(
+data class PollResultResponse(
     val pollId: Int,
     val title: String,
     val totalVotes: Int,
-    val options: List<OptionResult>
+    val options: List<OptionResultResponse>
 )
 
 @Serializable
-data class OptionResult(
+data class OptionResultResponse(
     val optionId: Int,
     val text: String,
     val votes: Int,

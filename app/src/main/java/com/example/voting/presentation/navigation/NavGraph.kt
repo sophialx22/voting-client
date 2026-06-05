@@ -1,5 +1,4 @@
 package com.example.voting.presentation.navigation
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,6 +15,8 @@ import com.example.voting.presentation.polls.PollListScreen
 import com.example.voting.presentation.polls.PollListViewModel
 import com.example.voting.presentation.results.ResultsScreen
 import com.example.voting.presentation.voting.VotingScreen
+import com.example.voting.presentation.voting.VotingViewModel
+import com.example.voting.presentation.results.ResultsViewModel
 
 sealed class Screen(val route: String) {
     object Auth : Screen("auth")
@@ -36,6 +37,8 @@ sealed class Screen(val route: String) {
 fun NavGraph(
     authViewModel: AuthViewModel,
     pollListViewModel: PollListViewModel,
+    votingViewModel: VotingViewModel,
+    resultsViewModel: ResultsViewModel,
     onToggleTheme: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -115,7 +118,7 @@ fun NavGraph(
             val pollId = backStackEntry.arguments?.getInt("pollId") ?: return@composable
             VotingScreen(
                 pollId = pollId,
-                viewModel = pollListViewModel,
+                viewModel = votingViewModel,
                 onBack = {
                     navController.popBackStack()
                 },
@@ -132,7 +135,7 @@ fun NavGraph(
             val pollId = backStackEntry.arguments?.getInt("pollId") ?: return@composable
             ResultsScreen(
                 pollId = pollId,
-                viewModel = pollListViewModel,
+                viewModel = resultsViewModel,
                 onBack = {
                     navController.popBackStack()
                 }

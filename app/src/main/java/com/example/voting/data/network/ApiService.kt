@@ -24,28 +24,28 @@ class ApiService(
             setBody(mapOf("idToken" to idToken))
         }.body()
     }
-    suspend fun getAllPolls(token: String): List<Poll> {
+    suspend fun getAllPolls(token: String): List<PollResponse> {
         return client.get {
             url("$baseUrl/polls")
             header("Authorization", "Bearer $token")
         }.body()
     }
 
-    suspend fun getPollById(pollId: Int, token: String): Poll {
+    suspend fun getPollById(pollId: Int, token: String): PollResponse {
         return client.get {
             url("$baseUrl/polls/$pollId")
             header("Authorization", "Bearer $token")
         }.body()
     }
 
-    suspend fun getMyPolls(userEmail: String, token: String): List<Poll> {
+    suspend fun getMyPolls(userEmail: String, token: String): List<PollResponse> {
         return client.get {
             url("$baseUrl/polls/my?email=$userEmail")
             header("Authorization", "Bearer $token")
         }.body()
     }
 
-    suspend fun createPoll(request: CreatePollRequest, token: String): Poll {
+    suspend fun createPoll(request: CreatePollRequest, token: String): PollResponse {
         return client.post {
             url("$baseUrl/polls/create")
             contentType(ContentType.Application.Json)
@@ -54,7 +54,7 @@ class ApiService(
         }.body()
     }
 
-    suspend fun updatePoll(pollId: Int, request: CreatePollRequest, token: String): Poll {
+    suspend fun updatePoll(pollId: Int, request: CreatePollRequest, token: String): PollResponse {
         return client.put {
             url("$baseUrl/polls/$pollId")
             contentType(ContentType.Application.Json)
@@ -79,7 +79,7 @@ class ApiService(
         }.body()
     }
 
-    suspend fun getResults(pollId: Int, token: String): PollResultData {
+    suspend fun getResults(pollId: Int, token: String): PollResultResponse  {
         return client.get {
             url("$baseUrl/votes/results/$pollId")
             header("Authorization", "Bearer $token")

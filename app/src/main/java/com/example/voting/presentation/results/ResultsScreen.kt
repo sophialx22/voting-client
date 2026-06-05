@@ -10,24 +10,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.voting.presentation.polls.PollListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultsScreen(
     pollId: Int,
-    viewModel: PollListViewModel,
+    viewModel: ResultsViewModel,
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val poll = uiState.polls.find { it.id == pollId }
-    var results by remember { mutableStateOf<com.example.voting.domain.model.PollResult?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
+    val results = uiState.results
 
-    LaunchedEffect(pollId) {
-        val result = viewModel.loadResults(pollId)
-        results = result.getOrNull()
-        isLoading = false
+    LaunchedEffect(Unit) {
+        viewModel.loadResults(pollId)
     }
 
     Scaffold(
@@ -43,7 +38,7 @@ fun ResultsScreen(
         }
     ) { paddingValues ->
         when {
-            isLoading -> {
+            uiState.isLoading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -60,7 +55,7 @@ fun ResultsScreen(
                         .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Не удалось загрузить результаты")
+                    Text(uiState.error ?: "Не удалось загрузить результаты")
                 }
             }
             else -> {
@@ -72,16 +67,16 @@ fun ResultsScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     item {
-                        Text(poll?.title ?: "", style = MaterialTheme.typography.titleLarge)
+                        Text(results.title, style = MaterialTheme.typography.titleLarge)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Всего голосов: ${results!!.totalVotes}", style = MaterialTheme.typography.titleMedium)
+                        Text("Всего голосов: ${results.totalVotes}", style = MaterialTheme.typography.titleMedium)
                     }
 
                     item {
                         Text("Результаты:", style = MaterialTheme.typography.titleMedium)
                     }
 
-                    items(results!!.options) { option ->
+                    items(results.options) { option ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

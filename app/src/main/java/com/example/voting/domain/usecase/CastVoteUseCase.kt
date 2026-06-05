@@ -7,9 +7,6 @@ class CastVoteUseCase(
     private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(pollId: Int, optionId: Int): Result<Boolean> {
-        if (pollId <= 0) {
-            return Result.failure(IllegalArgumentException("Неверный ID голосования"))
-        }
 
         val userEmail = authRepository.getCurrentUserEmail()
         if (userEmail.isNullOrBlank()) {

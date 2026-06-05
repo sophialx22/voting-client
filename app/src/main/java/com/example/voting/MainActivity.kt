@@ -1,4 +1,5 @@
 package com.example.voting
+
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,15 +19,19 @@ import com.example.voting.data.network.NetworkClient
 import com.example.voting.data.repository.AuthRepositoryImpl
 import com.example.voting.data.repository.PollRepositoryImpl
 import com.example.voting.data.repository.VoteRepositoryImpl
+import com.example.voting.data.repository.SearchHistoryRepositoryImpl
 import com.example.voting.data.store.SearchHistoryDataStore
 import com.example.voting.domain.repository.AuthRepository
 import com.example.voting.domain.repository.PollRepository
 import com.example.voting.domain.repository.VoteRepository
+import com.example.voting.domain.repository.SearchHistoryRepository
 import com.example.voting.domain.usecase.*
 import com.example.voting.presentation.auth.AuthViewModel
 import com.example.voting.presentation.navigation.NavGraph
 import com.example.voting.presentation.polls.PollListViewModel
+import com.example.voting.presentation.results.ResultsViewModel
 import com.example.voting.presentation.theme.VotingTheme
+import com.example.voting.presentation.voting.VotingViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -36,6 +41,10 @@ class MainActivity : ComponentActivity() {
 
     private val searchHistoryDataStore by lazy {
         SearchHistoryDataStore(applicationContext)
+    }
+
+    private val searchHistoryRepository: SearchHistoryRepository by lazy {
+        SearchHistoryRepositoryImpl(searchHistoryDataStore)
     }
 
     private val apiService by lazy { NetworkClient.getApiService() }
@@ -51,8 +60,10 @@ class MainActivity : ComponentActivity() {
     private val voteRepository: VoteRepository by lazy {
         VoteRepositoryImpl(apiService, authRepository)
     }
+
     private val getAllPollsUseCase by lazy { GetAllPollsUseCase(pollRepository) }
     private val getMyPollsUseCase by lazy { GetMyPollsUseCase(pollRepository, authRepository) }
+    private val getPollByIdUseCase by lazy { GetPollByIdUseCase(pollRepository) }
     private val createPollUseCase by lazy { CreatePollUseCase(pollRepository) }
     private val deletePollUseCase by lazy { DeletePollUseCase(pollRepository) }
     private val updatePollUseCase by lazy { UpdatePollUseCase(pollRepository) }
@@ -61,6 +72,8 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var authViewModel: AuthViewModel
     private lateinit var pollListViewModel: PollListViewModel
+    private lateinit var votingViewModel: VotingViewModel
+    private lateinit var resultsViewModel: ResultsViewModel
 
     private val DARK_THEME_KEY = booleanPreferencesKey("dark_theme")
 
@@ -79,17 +92,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         authViewModel = AuthViewModel(authRepository, apiService)
+
         pollListViewModel = PollListViewModel(
             getAllPollsUseCase,
             getMyPollsUseCase,
             createPollUseCase,
             deletePollUseCase,
             updatePollUseCase,
-            castVoteUseCase,
-            getResultsUseCase,
-            searchHistoryDataStore,
+            searchHistoryRepository,
             authRepository
         )
+
+        votingViewModel = VotingViewModel(
+            getPollByIdUseCase,
+            castVoteUseCase
+        )
+
+        resultsViewModel = ResultsViewModel(getResultsUseCase)
 
         var isDarkTheme by mutableStateOf(false)
 
@@ -113,6 +132,8 @@ class MainActivity : ComponentActivity() {
                     NavGraph(
                         authViewModel = authViewModel,
                         pollListViewModel = pollListViewModel,
+                        votingViewModel = votingViewModel,
+                        resultsViewModel = resultsViewModel,
                         onToggleTheme = toggleTheme
                     )
                 }

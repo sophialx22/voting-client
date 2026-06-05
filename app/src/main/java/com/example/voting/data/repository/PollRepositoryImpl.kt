@@ -1,6 +1,6 @@
 package com.example.voting.data.repository
 import com.example.voting.data.model.CreatePollRequest
-import com.example.voting.data.model.Poll as DataPoll
+import com.example.voting.data.model.PollResponse as DataPoll
 import com.example.voting.data.network.ApiService
 import com.example.voting.domain.model.Poll
 import com.example.voting.domain.model.PollOption

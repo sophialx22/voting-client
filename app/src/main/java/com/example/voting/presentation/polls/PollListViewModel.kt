@@ -1,9 +1,8 @@
 package com.example.voting.presentation.polls
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.voting.data.store.SearchHistoryDataStore
+import com.example.voting.domain.repository.SearchHistoryRepository
 import com.example.voting.domain.model.Poll
-import com.example.voting.domain.model.PollResult
 import com.example.voting.domain.repository.AuthRepository
 import com.example.voting.domain.usecase.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,9 +27,7 @@ class PollListViewModel(
     private val createPollUseCase: CreatePollUseCase,
     private val deletePollUseCase: DeletePollUseCase,
     private val updatePollUseCase: UpdatePollUseCase,
-    private val castVoteUseCase: CastVoteUseCase,
-    private val getResultsUseCase: GetResultsUseCase,
-    private val searchHistoryDataStore: SearchHistoryDataStore,
+    private val searchHistoryRepository: SearchHistoryRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -88,29 +85,26 @@ class PollListViewModel(
         _uiState.value = _uiState.value.copy(searchQuery = query)
     }
 
-    private fun loadSearchHistory() {
-        viewModelScope.launch {
-            val history = searchHistoryDataStore.getSearchHistory()
-            _uiState.value = _uiState.value.copy(searchHistory = history)
-            println("История загружена: $history")
-        }
-    }
-
     fun addToSearchHistory(query: String) {
         if (query.isBlank()) return
         viewModelScope.launch {
-            searchHistoryDataStore.addToHistory(query)
-            val newHistory = searchHistoryDataStore.getSearchHistory()
+            searchHistoryRepository.addToHistory(query)
+            val newHistory = searchHistoryRepository.getSearchHistory()
             _uiState.value = _uiState.value.copy(searchHistory = newHistory)
-            println("Добавлен в историю: $query, история: $newHistory")
         }
     }
 
     fun clearSearchHistory() {
         viewModelScope.launch {
-            searchHistoryDataStore.clearHistory()
+            searchHistoryRepository.clearHistory()
             _uiState.value = _uiState.value.copy(searchHistory = emptyList())
-            println("История очищена")
+        }
+    }
+
+    private fun loadSearchHistory() {
+        viewModelScope.launch {
+            val history = searchHistoryRepository.getSearchHistory()
+            _uiState.value = _uiState.value.copy(searchHistory = history)
         }
     }
 
@@ -152,20 +146,13 @@ class PollListViewModel(
         }
     }
 
-    suspend fun castVote(pollId: Int, optionId: Int): Result<Boolean> {
-        return castVoteUseCase(pollId, optionId)
-    }
-
-    suspend fun loadResults(pollId: Int): Result<PollResult> {
-        return getResultsUseCase(pollId)
-    }
-
     suspend fun getPollById(pollId: Int): Result<Poll> {
         return getAllPollsUseCase().map { polls ->
             polls.find { it.id == pollId }
                 ?: throw Exception("Голосование не найдено")
         }
     }
+
     suspend fun updatePoll(pollId: Int, title: String, description: String, options: List<String>): Result<Poll> {
         return updatePollUseCase(pollId, title, description, options)
     }
@@ -179,10 +166,6 @@ class PollListViewModel(
             val email = authRepository.getCurrentUserEmail()
             _uiState.value = _uiState.value.copy(currentUserEmail = email)
         }
-    }
-
-    fun clearError() {
-        _uiState.value = _uiState.value.copy(error = null)
     }
 
     val filteredPolls: List<Poll>
